@@ -28,7 +28,6 @@ fun OnboardingScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // --- SECCIÓN 1: ENCABEZADO Y TÍTULO ---
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(top = 32.dp)
@@ -56,7 +55,6 @@ fun OnboardingScreen(
             )
         }
 
-        // --- SECCIÓN 2: TARJETA DE LÍMITES ÉTICOS Y PRIVACIDAD ---
         Card(
             colors = CardDefaults.cardColors(containerColor = FondoSecundario),
             shape = RoundedCornerShape(16.dp),
@@ -82,12 +80,10 @@ fun OnboardingScreen(
             }
         }
 
-        // --- SECCIÓN 3: BOTONES DE ACCESO ---
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Botón principal: Ingreso Demo para evaluación
             Button(
                 onClick = onNavigateToHome,
                 modifier = Modifier
