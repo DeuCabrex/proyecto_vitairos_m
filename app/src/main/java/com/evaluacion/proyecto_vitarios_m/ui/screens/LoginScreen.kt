@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -31,6 +32,22 @@ fun LoginScreen(
     var isRegisterMode by remember { mutableStateOf(false) }
     var alias by remember { mutableStateOf("") }
 
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = NavyPrincipal,
+        unfocusedTextColor = NavyPrincipal,
+        focusedBorderColor = AzulDigital,
+        unfocusedBorderColor = GrisAzulado,
+        focusedLabelColor = AzulDigital,
+        unfocusedLabelColor = GrisAzulado,
+        cursorColor = AzulDigital
+    )
+
+    val inputTextStyle = TextStyle(
+        color = NavyPrincipal,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,7 +57,6 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // --- LOGO Y TÍTULOS ---
         Text(
             text = "VITAIROS-M",
             fontSize = 32.sp,
@@ -72,6 +88,8 @@ fun LoginScreen(
                 onValueChange = { alias = it },
                 label = { Text("Nombre o Alias de preferencia") },
                 singleLine = true,
+                textStyle = inputTextStyle,
+                colors = textFieldColors,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             )
@@ -82,8 +100,10 @@ fun LoginScreen(
             value = email,
             onValueChange = { email = it },
             label = { Text("Correo electrónico simulado") },
-            placeholder = { Text("ejemplo@duoc.cl") },
+            placeholder = { Text("ejemplo@duoc.cl", color = GrisAzulado) },
             singleLine = true,
+            textStyle = inputTextStyle,
+            colors = textFieldColors,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
@@ -96,6 +116,8 @@ fun LoginScreen(
             onValueChange = { password = it },
             label = { Text("Contraseña") },
             singleLine = true,
+            textStyle = inputTextStyle,
+            colors = textFieldColors,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth(),
@@ -139,7 +161,7 @@ fun LoginScreen(
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
-                text = "Ingresar como Usuario Demo",
+                text = "⚡ Ingresar como Usuario Demo",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = NavyPrincipal

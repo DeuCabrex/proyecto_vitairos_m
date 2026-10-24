@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.evaluacion.proyecto_vitarios_m.ui.screens.OnboardingScreen
+import com.evaluacion.proyecto_vitarios_m.ui.screens.LoginScreen
 import com.evaluacion.proyecto_vitarios_m.ui.theme.FondoPrincipal
 import com.evaluacion.proyecto_vitarios_m.ui.theme.Proyecto_Vitarios_MTheme
 
@@ -20,13 +20,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = FondoPrincipal
                 ) {
-                    // Cargamos la pantalla de Onboarding
-                    OnboardingScreen(
-                        onNavigateToHome = {
-                            // Por ahora mostramos un mensaje rápido al presionar el botón
+                    LoginScreen(
+                        onLoginSuccess = { userAlias ->
                             Toast.makeText(
                                 this,
-                                "Ingresando como Usuario Demo...",
+                                "¡Bienvenido/a $userAlias!",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
