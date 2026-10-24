@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +27,18 @@ fun LoginScreen(
 
     var isEmailError by remember { mutableStateOf(false) }
     var emailErrorMessage by remember { mutableStateOf("") }
+
+    // Configuración unificada de colores para mantener la legibilidad incluso en estado de error
+    val inputColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = NavyPrincipal,
+        unfocusedTextColor = NavyPrincipal,
+        errorTextColor = NavyPrincipal,
+        focusedBorderColor = AzulDigital,
+        unfocusedBorderColor = GrisAzulado,
+        errorBorderColor = MaterialTheme.colorScheme.error,
+        cursorColor = AzulDigital,
+        errorCursorColor = AzulDigital
+    )
 
     fun validarAlias(valor: String): Boolean {
         val textoLimpio = valor.trim()
@@ -126,19 +136,13 @@ fun LoginScreen(
                     },
                     trailingIcon = {
                         if (isAliasError) {
-                            Icon(Icons.Filled.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+                            Text("⚠️", fontSize = 14.sp)
                         }
                     },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = NavyPrincipal,
-                        unfocusedTextColor = NavyPrincipal,
-                        focusedBorderColor = AzulDigital,
-                        unfocusedBorderColor = GrisAzulado,
-                        cursorColor = AzulDigital
-                    )
+                    colors = inputColors
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -158,19 +162,13 @@ fun LoginScreen(
                     },
                     trailingIcon = {
                         if (isEmailError) {
-                            Icon(Icons.Filled.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.error)
+                            Text("⚠️", fontSize = 14.sp)
                         }
                     },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = NavyPrincipal,
-                        unfocusedTextColor = NavyPrincipal,
-                        focusedBorderColor = AzulDigital,
-                        unfocusedBorderColor = GrisAzulado,
-                        cursorColor = AzulDigital
-                    )
+                    colors = inputColors
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))

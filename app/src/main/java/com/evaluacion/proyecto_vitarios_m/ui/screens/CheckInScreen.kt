@@ -1,6 +1,9 @@
 package com.evaluacion.proyecto_vitarios_m.ui.screens
 
+import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +58,25 @@ fun CheckInScreen(
         cursorColor = AzulDigital
     )
 
+    fun compartirRegistro() {
+        val mood = nivelesAnimo.find { it.id == selectedMoodId }?.etiqueta ?: "No especificado"
+        val emoji = nivelesAnimo.find { it.id == selectedMoodId }?.emoji ?: ""
+        val textoCompartir = """
+            🌱 Mi registro en VITAIROS-M:
+            • Estado de ánimo: $emoji $mood
+            • Relacionado con: ${if (selectedCategory.isNotEmpty()) selectedCategory else "General"}
+            • Nota: ${if (noteText.isNotEmpty()) noteText else "Sin nota"}
+        """.trimIndent()
+
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, textoCompartir)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, "Compartir mi reflexión")
+        context.startActivity(shareIntent)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -95,6 +118,16 @@ fun CheckInScreen(
         ) {
             nivelesAnimo.forEach { item ->
                 val isSelected = selectedMoodId == item.id
+
+                val animatedScale by animateFloatAsState(
+                    targetValue = if (isSelected) 1.35f else 1.0f,
+                    label = "emojiScale"
+                )
+                val animatedBorderWidth by animateDpAsState(
+                    targetValue = if (isSelected) 2.dp else 0.dp,
+                    label = "borderWidth"
+                )
+
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = if (isSelected) MintSuave else FondoSecundario
@@ -105,7 +138,7 @@ fun CheckInScreen(
                         .padding(horizontal = 2.dp)
                         .clickable { selectedMoodId = item.id }
                         .border(
-                            width = if (isSelected) 2.dp else 0.dp,
+                            width = animatedBorderWidth,
                             color = if (isSelected) VerdeContinuidad else FondoSecundario,
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -116,7 +149,11 @@ fun CheckInScreen(
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = item.emoji, fontSize = 22.sp)
+                        Text(
+                            text = item.emoji,
+                            fontSize = 22.sp,
+                            modifier = Modifier.scale(animatedScale)
+                        )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = item.etiqueta,
@@ -218,6 +255,29 @@ fun CheckInScreen(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = FondoPrincipal
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedButton(
+            onClick = {
+                if (selectedMoodId == null) {
+                    Toast.makeText(context, "Selecciona tu ánimo antes de compartir", Toast.LENGTH_SHORT).show()
+                } else {
+                    compartirRegistro()
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text(
+                text = "📲 Compartir mi reflexión",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = NavyPrincipal
             )
         }
     }
