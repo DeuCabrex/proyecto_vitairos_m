@@ -30,7 +30,6 @@ fun HomeScreen(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        // --- 1. ENCABEZADO Y BOTÓN DE AYUDA URGENTE ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -52,7 +51,6 @@ fun HomeScreen(
                 )
             }
 
-            // Botón compacto de ayuda en crisis
             Button(
                 onClick = onNavigateToCrisis,
                 colors = ButtonDefaults.buttonColors(containerColor = MintSuave),
@@ -70,7 +68,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // --- 2. TARJETA DE CHECK-IN EMOCIONAL ---
         Card(
             colors = CardDefaults.cardColors(containerColor = FondoSecundario),
             shape = RoundedCornerShape(12.dp),
@@ -113,7 +110,6 @@ fun HomeScreen(
             }
         }
 
-        // --- 3. ACCESO A ORIENTACIÓN CONVERSACIONAL ---
         Card(
             colors = CardDefaults.cardColors(containerColor = AzulSuave),
             shape = RoundedCornerShape(12.dp),
@@ -155,7 +151,6 @@ fun HomeScreen(
             }
         }
 
-        // --- 4. TARJETA "TU PRÓXIMO PASO" ---
         Card(
             colors = CardDefaults.cardColors(containerColor = FondoSecundario),
             shape = RoundedCornerShape(12.dp),
@@ -181,7 +176,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // --- BOTÓN CERRAR SESIÓN ---
         TextButton(
             onClick = onLogout,
             modifier = Modifier.align(Alignment.CenterHorizontally)
