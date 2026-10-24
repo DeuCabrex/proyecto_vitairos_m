@@ -26,7 +26,7 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(FondoPrincipal)
-            .statusBarsPadding() // Respeta el margen de la barra de estado y notch del teléfono
+            .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -105,7 +105,7 @@ fun HomeScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = AzulDigital),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Hacer Check-in de hoy", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text("Registrar cómo me siento", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }

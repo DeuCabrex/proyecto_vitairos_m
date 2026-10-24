@@ -71,7 +71,7 @@ fun CheckInScreen(
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "Check-in Emocional",
+                text = "¿Cómo te sientes hoy?",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = NavyPrincipal
@@ -203,7 +203,7 @@ fun CheckInScreen(
                 if (selectedMoodId == null) {
                     Toast.makeText(context, "Selecciona una carita según tu estado de ánimo", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "¡Check-in guardado con éxito!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "¡Registro guardado con éxito!", Toast.LENGTH_SHORT).show()
                     onCheckInSaved()
                 }
             },
@@ -214,7 +214,7 @@ fun CheckInScreen(
             shape = RoundedCornerShape(10.dp)
         ) {
             Text(
-                text = "Guardar Registro",
+                text = "Guardar mi respuesta",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = FondoPrincipal

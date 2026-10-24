@@ -3,6 +3,7 @@ package com.evaluacion.proyecto_vitarios_m.ui.navigation
 import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import com.evaluacion.proyecto_vitarios_m.ui.screens.ChatScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.CheckInScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.HomeScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.LoginScreen
@@ -12,7 +13,8 @@ enum class Pantalla {
     ONBOARDING,
     LOGIN,
     HOME,
-    CHECKIN
+    CHECKIN,
+    CHAT
 }
 
 @Composable
@@ -46,7 +48,7 @@ fun AppNavigation() {
                     pantallaActual = Pantalla.CHECKIN
                 },
                 onNavigateToChat = {
-                    Toast.makeText(context, "Próximamente: Chat de Orientación", Toast.LENGTH_SHORT).show()
+                    pantallaActual = Pantalla.CHAT
                 },
                 onNavigateToCrisis = {
                     Toast.makeText(context, "Próximamente: Canales de Emergencia (*4141)", Toast.LENGTH_LONG).show()
@@ -63,6 +65,14 @@ fun AppNavigation() {
                     pantallaActual = Pantalla.HOME
                 },
                 onCheckInSaved = {
+                    pantallaActual = Pantalla.HOME
+                }
+            )
+        }
+
+        Pantalla.CHAT -> {
+            ChatScreen(
+                onNavigateBack = {
                     pantallaActual = Pantalla.HOME
                 }
             )
