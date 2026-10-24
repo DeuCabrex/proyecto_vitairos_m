@@ -26,159 +26,167 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(FondoPrincipal)
-            .padding(20.dp)
+            .statusBarsPadding() // Respeta el margen de la barra de estado y notch del teléfono
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // --- 1. ENCABEZADO Y BOTÓN DE AYUDA URGENTE ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 20.dp),
+                .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
                 Text(
                     text = "Hola, $aliasUsuario 👋",
-                    fontSize = 22.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = NavyPrincipal
                 )
                 Text(
                     text = "¿Cómo va tu día?",
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     color = GrisAzulado
                 )
             }
 
+            // Botón compacto de ayuda en crisis
             Button(
                 onClick = onNavigateToCrisis,
                 colors = ButtonDefaults.buttonColors(containerColor = MintSuave),
-                shape = RoundedCornerShape(20.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                shape = RoundedCornerShape(14.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "¡Ayuda Urgente!",
+                    text = "🚨 Ayuda Urgente",
                     color = CianTexto,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // --- 2. TARJETA DE CHECK-IN EMOCIONAL ---
         Card(
             colors = CardDefaults.cardColors(containerColor = FondoSecundario),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 4.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "Registro Emocional",
-                    fontSize = 13.sp,
+                    text = "REGISTRO EMOCIONAL",
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = CianTexto
+                    color = CianTexto,
+                    letterSpacing = 1.sp
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "¿Cómo te sientes en este momento?",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = NavyPrincipal
                 )
-                Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Registrar tu estado de ánimo te ayuda a identificar patrones y reflexionar sobre tu día.",
-                    fontSize = 13.sp,
-                    color = GrisAzulado,
-                    lineHeight = 18.sp
+                    text = "Identifica patrones y reflexiona sobre tu jornada.",
+                    fontSize = 12.sp,
+                    color = GrisAzulado
                 )
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Button(
                     onClick = onNavigateToCheckIn,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AzulDigital),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Hacer Check-in de hoy", fontWeight = FontWeight.Bold)
+                    Text("Hacer Check-in de hoy", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
+        // --- 3. ACCESO A ORIENTACIÓN CONVERSACIONAL ---
         Card(
             colors = CardDefaults.cardColors(containerColor = AzulSuave),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 4.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "Orientación guiada",
-                    fontSize = 13.sp,
+                    text = "ORIENTACIÓN GUIADA",
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = CianTexto
+                    color = CianTexto,
+                    letterSpacing = 1.sp
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "Hablar con VITAIROS-M",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = NavyPrincipal
                 )
-                Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Recibe contención, pausas guiadas o sugerencias breves de autocuidado.",
-                    fontSize = 13.sp,
-                    color = GrisAzulado,
-                    lineHeight = 18.sp
+                    text = "Recibe contención o sugerencias de autocuidado.",
+                    fontSize = 12.sp,
+                    color = GrisAzulado
                 )
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 OutlinedButton(
                     onClick = onNavigateToChat,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Iniciar conversación", color = NavyPrincipal, fontWeight = FontWeight.Bold)
+                    Text("Iniciar conversación", color = NavyPrincipal, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
+        // --- 4. TARJETA "TU PRÓXIMO PASO" ---
         Card(
             colors = CardDefaults.cardColors(containerColor = FondoSecundario),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 4.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "📌 Tu próximo paso",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = NavyPrincipal
-                    )
-                }
-                Spacer(modifier = Modifier.height(6.dp))
+            Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "Realiza una pausa consciente de respiración de 2 minutos antes de continuar tu jornada.",
+                    text = "📌 Tu próximo paso",
                     fontSize = 13.sp,
-                    color = GrisAzulado,
-                    lineHeight = 18.sp
+                    fontWeight = FontWeight.Bold,
+                    color = NavyPrincipal
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Pausa consciente de respiración de 2 minutos antes de continuar.",
+                    fontSize = 12.sp,
+                    color = GrisAzulado
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
+        // --- BOTÓN CERRAR SESIÓN ---
         TextButton(
             onClick = onLogout,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text("Cerrar Sesión", color = GrisAzulado, fontSize = 13.sp)
+            Text("Cerrar Sesión", color = GrisAzulado, fontSize = 12.sp)
         }
     }
 }
