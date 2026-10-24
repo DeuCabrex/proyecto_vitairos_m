@@ -66,7 +66,7 @@ fun ChatScreen(
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "Hablar con VITAIROS-M",
+                text = "Habla con nosotros",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 color = NavyPrincipal

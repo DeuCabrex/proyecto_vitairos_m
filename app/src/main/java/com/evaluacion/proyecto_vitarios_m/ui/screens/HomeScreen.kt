@@ -20,6 +20,7 @@ fun HomeScreen(
     onNavigateToCheckIn: () -> Unit,
     onNavigateToChat: () -> Unit,
     onNavigateToCrisis: () -> Unit,
+    onNavigateToProfessionals: () -> Unit,
     onLogout: () -> Unit
 ) {
     Column(
@@ -160,17 +161,35 @@ fun HomeScreen(
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "📌 Tu próximo paso",
-                    fontSize = 13.sp,
+                    text = "RED PROFESIONAL",
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = NavyPrincipal
+                    color = CianTexto,
+                    letterSpacing = 1.sp
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Pausa consciente de respiración de 2 minutos antes de continuar.",
+                    text = "Especialistas y Citas",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = NavyPrincipal
+                )
+                Text(
+                    text = "Explora la red de apoyo profesional disponible.",
                     fontSize = 12.sp,
                     color = GrisAzulado
                 )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                OutlinedButton(
+                    onClick = onNavigateToProfessionals,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Ver profesionales", color = NavyPrincipal, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
 
