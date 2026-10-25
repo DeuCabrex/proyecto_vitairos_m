@@ -13,6 +13,9 @@ import com.evaluacion.proyecto_vitarios_m.ui.screens.LoginScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.OnboardingScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.ProfessionalsScreen
 import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.CheckInViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.ChatViewModel
 
 enum class Pantalla {
     ONBOARDING,
@@ -95,7 +98,12 @@ fun AppNavigation() {
         }
 
         Pantalla.CHAT -> {
+            val chatViewModel: ChatViewModel = viewModel()
+            val chatMessages by chatViewModel.messages.collectAsState()
+
             ChatScreen(
+                viewModel = chatViewModel,
+                messagesList = chatMessages,
                 onNavigateBack = {
                     pantallaActual = Pantalla.HOME
                 }
