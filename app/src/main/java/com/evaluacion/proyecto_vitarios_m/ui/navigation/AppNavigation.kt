@@ -1,6 +1,5 @@
 package com.evaluacion.proyecto_vitarios_m.ui.navigation
 
-
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -12,10 +11,9 @@ import com.evaluacion.proyecto_vitarios_m.ui.screens.HomeScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.LoginScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.OnboardingScreen
 import com.evaluacion.proyecto_vitarios_m.ui.screens.ProfessionalsScreen
-import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.CheckInViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
 import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.ChatViewModel
+import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.CheckInViewModel
+import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.UserViewModel
 
 enum class Pantalla {
     ONBOARDING,
@@ -35,6 +33,11 @@ fun AppNavigation() {
     var aliasUsuario by remember { mutableStateOf("Usuario Demo") }
 
     val checkInViewModel: CheckInViewModel = viewModel()
+    val chatViewModel: ChatViewModel = viewModel()
+    val userViewModel: UserViewModel = viewModel()
+
+    val usuarioGuardado by userViewModel.userState.collectAsState()
+    val aliasFinal = usuarioGuardado?.alias ?: aliasUsuario
 
     when (pantallaActual) {
         Pantalla.ONBOARDING -> {
@@ -49,6 +52,7 @@ fun AppNavigation() {
             LoginScreen(
                 onLoginSuccess = { alias ->
                     aliasUsuario = alias
+                    userViewModel.guardarUsuario(alias)
                     pantallaActual = Pantalla.HOME
                 }
             )
@@ -56,7 +60,7 @@ fun AppNavigation() {
 
         Pantalla.HOME -> {
             HomeScreen(
-                aliasUsuario = aliasUsuario,
+                aliasUsuario = aliasFinal,
                 onNavigateToCheckIn = {
                     pantallaActual = Pantalla.CHECKIN
                 },
@@ -98,9 +102,7 @@ fun AppNavigation() {
         }
 
         Pantalla.CHAT -> {
-            val chatViewModel: ChatViewModel = viewModel()
             val chatMessages by chatViewModel.messages.collectAsState()
-
             ChatScreen(
                 viewModel = chatViewModel,
                 messagesList = chatMessages,
