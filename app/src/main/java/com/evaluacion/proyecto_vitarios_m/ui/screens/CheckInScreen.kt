@@ -1,284 +1,262 @@
 package com.evaluacion.proyecto_vitarios_m.ui.screens
 
-import android.content.Intent
-import android.widget.Toast
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.evaluacion.proyecto_vitarios_m.ui.theme.*
+import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.CheckInViewModel
 
-data class NivelAnimo(val id: Int, val emoji: String, val etiqueta: String)
+data class MoodOption(
+    val id: Int,
+    val emoji: String,
+    val label: String,
+    val color: Color
+)
 
+data class CategoryOption(
+    val id: Int,
+    val label: String
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckInScreen(
+    viewModel: CheckInViewModel,
     onNavigateBack: () -> Unit,
-    onCheckInSaved: () -> Unit
+    onNavigateToHistory: () -> Unit
 ) {
-    val context = LocalContext.current
+    val moods = listOf(
+        MoodOption(1, "😢", "Muy mal", Color(0xFFEF5350)),
+        MoodOption(2, "🙁", "Mal", Color(0xFFFF9800)),
+        MoodOption(3, "😐", "Regular", Color(0xFFFFCA28)),
+        MoodOption(4, "🙂", "Bien", Color(0xFF66BB6A)),
+        MoodOption(5, "😄", "Excelente", Color(0xFF26A69A))
+    )
 
-    var selectedMoodId by remember { mutableStateOf<Int?>(null) }
-    var selectedCategory by remember { mutableStateOf("") }
+    val categories = listOf(
+        CategoryOption(1, "Trabajo"),
+        CategoryOption(2, "Estudios"),
+        CategoryOption(3, "Familia"),
+        CategoryOption(4, "Salud"),
+        CategoryOption(5, "Pareja"),
+        CategoryOption(6, "Personal")
+    )
+
+    var selectedMood by remember { mutableStateOf<MoodOption?>(null) }
+    var selectedCategory by remember { mutableStateOf<CategoryOption?>(null) }
     var noteText by remember { mutableStateOf("") }
-
-    val nivelesAnimo = listOf(
-        NivelAnimo(1, "😫", "Muy mal"),
-        NivelAnimo(2, "🙁", "Mal"),
-        NivelAnimo(3, "😐", "Regular"),
-        NivelAnimo(4, "🙂", "Bien"),
-        NivelAnimo(5, "😄", "Excelente")
-    )
-
-    val categoriasFila1 = listOf("Estudios", "Trabajo", "Familia")
-    val categoriasFila2 = listOf("Salud", "Pareja", "Otro")
-
-    val textFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedTextColor = NavyPrincipal,
-        unfocusedTextColor = NavyPrincipal,
-        focusedBorderColor = AzulDigital,
-        unfocusedBorderColor = GrisAzulado,
-        focusedLabelColor = AzulDigital,
-        unfocusedLabelColor = GrisAzulado,
-        cursorColor = AzulDigital
-    )
-
-    fun compartirRegistro() {
-        val mood = nivelesAnimo.find { it.id == selectedMoodId }?.etiqueta ?: "No especificado"
-        val emoji = nivelesAnimo.find { it.id == selectedMoodId }?.emoji ?: ""
-        val textoCompartir = """
-            🌱 Mi registro en VITAIROS-M:
-            • Estado de ánimo: $emoji $mood
-            • Relacionado con: ${if (selectedCategory.isNotEmpty()) selectedCategory else "General"}
-            • Nota: ${if (noteText.isNotEmpty()) noteText else "Sin nota"}
-        """.trimIndent()
-
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, textoCompartir)
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(sendIntent, "Compartir mi reflexión")
-        context.startActivity(shareIntent)
-    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(FondoPrincipal)
             .statusBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .verticalScroll(rememberScrollState())
+            .padding(bottom = 16.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             TextButton(onClick = onNavigateBack) {
-                Text("← Volver", color = AzulDigital, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(" Volver", color = AzulDigital, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "¿Cómo te sientes hoy?",
-                fontSize = 18.sp,
+                text = "Check-in Emocional",
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 color = NavyPrincipal
             )
             Spacer(modifier = Modifier.weight(1f))
+            TextButton(onClick = onNavigateToHistory) {
+                Text("Historial", color = AzulDigital, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        HorizontalDivider(color = FondoSecundario, thickness = 1.dp)
 
-        Text(
-            text = "1. ¿Cómo defines tu ánimo actual?",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = NavyPrincipal
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            nivelesAnimo.forEach { item ->
-                val isSelected = selectedMoodId == item.id
+            Column {
+                Spacer(modifier = Modifier.height(16.dp))
 
-                val animatedScale by animateFloatAsState(
-                    targetValue = if (isSelected) 1.35f else 1.0f,
-                    label = "emojiScale"
-                )
-                val animatedBorderWidth by animateDpAsState(
-                    targetValue = if (isSelected) 2.dp else 0.dp,
-                    label = "borderWidth"
+                Text(
+                    text = "¿Cómo te sientes en este momento?",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = NavyPrincipal
                 )
 
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isSelected) MintSuave else FondoSecundario
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 2.dp)
-                        .clickable { selectedMoodId = item.id }
-                        .border(
-                            width = animatedBorderWidth,
-                            color = if (isSelected) VerdeContinuidad else FondoSecundario,
-                            shape = RoundedCornerShape(12.dp)
-                        )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    moods.forEach { mood ->
+                        val isSelected = selectedMood?.id == mood.id
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { selectedMood = mood }
+                                .padding(4.dp)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(52.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (isSelected) mood.color.copy(alpha = 0.2f)
+                                        else FondoSecundario
+                                    )
+                                    .border(
+                                        width = if (isSelected) 2.dp else 0.dp,
+                                        color = if (isSelected) mood.color else Color.Transparent,
+                                        shape = CircleShape
+                                    )
+                            ) {
+                                Text(text = mood.emoji, fontSize = 26.sp)
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = mood.label,
+                                fontSize = 10.sp,
+                                color = if (isSelected) mood.color else GrisAzulado,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = selectedMood != null,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(24.dp))
+
                         Text(
-                            text = item.emoji,
-                            fontSize = 22.sp,
-                            modifier = Modifier.scale(animatedScale)
+                            text = "¿Con qué se relaciona?",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = NavyPrincipal
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.height(100.dp)
+                        ) {
+                            items(categories) { cat ->
+                                val isCatSelected = selectedCategory?.id == cat.id
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isCatSelected) AzulDigital else FondoSecundario)
+                                        .clickable { selectedCategory = cat }
+                                        .padding(vertical = 10.dp)
+                                ) {
+                                    Text(
+                                        text = cat.label,
+                                        fontSize = 12.sp,
+                                        color = if (isCatSelected) Color.White else NavyPrincipal,
+                                        fontWeight = if (isCatSelected) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         Text(
-                            text = item.etiqueta,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isSelected) CianTexto else GrisAzulado,
-                            textAlign = TextAlign.Center
+                            text = "Nota o comentario (opcional)",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = NavyPrincipal
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        OutlinedTextField(
+                            value = noteText,
+                            onValueChange = { noteText = it },
+                            placeholder = { Text("Escribe algo que quieras recordar...", fontSize = 12.sp, color = GrisAzulado) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = FondoSecundario,
+                                unfocusedContainerColor = FondoSecundario,
+                                focusedBorderColor = AzulDigital,
+                                unfocusedBorderColor = Color.Transparent
+                            )
                         )
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(18.dp))
-
-        Text(
-            text = "2. ¿Con qué se relaciona principalmente?",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = NavyPrincipal
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            categoriasFila1.forEach { cat ->
-                val isSelected = selectedCategory == cat
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { selectedCategory = if (isSelected) "" else cat },
-                    label = { Text(cat, fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = AzulSuave,
-                        selectedLabelColor = NavyPrincipal,
-                        containerColor = FondoSecundario,
-                        labelColor = GrisAzulado
-                    )
+            Button(
+                onClick = {
+                    selectedMood?.let { mood ->
+                        viewModel.guardarCheckIn(
+                            moodId = mood.id,
+                            category = selectedCategory?.label ?: "",
+                            note = noteText,
+                            onFinished = {
+                                onNavigateToHistory()
+                            }
+                        )
+                    }
+                },
+                enabled = selectedMood != null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AzulDigital,
+                    disabledContainerColor = GrisAzulado.copy(alpha = 0.3f)
+                )
+            ) {
+                Text(
+                    text = "Guardar Registro",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
-        }
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            categoriasFila2.forEach { cat ->
-                val isSelected = selectedCategory == cat
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { selectedCategory = if (isSelected) "" else cat },
-                    label = { Text(cat, fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = AzulSuave,
-                        selectedLabelColor = NavyPrincipal,
-                        containerColor = FondoSecundario,
-                        labelColor = GrisAzulado
-                    )
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        Text(
-            text = "3. Nota o reflexión rápida (opcional)",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = NavyPrincipal
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = noteText,
-            onValueChange = { noteText = it },
-            placeholder = { Text("¿Ocurrió algo en particular hoy?", color = GrisAzulado, fontSize = 13.sp) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(90.dp),
-            textStyle = TextStyle(color = NavyPrincipal, fontSize = 14.sp),
-            colors = textFieldColors,
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = {
-                if (selectedMoodId == null) {
-                    Toast.makeText(context, "Selecciona una carita según tu estado de ánimo", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "¡Registro guardado con éxito!", Toast.LENGTH_SHORT).show()
-                    onCheckInSaved()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(46.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = AzulDigital),
-            shape = RoundedCornerShape(10.dp)
-        ) {
-            Text(
-                text = "Guardar mi respuesta",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = FondoPrincipal
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedButton(
-            onClick = {
-                if (selectedMoodId == null) {
-                    Toast.makeText(context, "Selecciona tu ánimo antes de compartir", Toast.LENGTH_SHORT).show()
-                } else {
-                    compartirRegistro()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp),
-            shape = RoundedCornerShape(10.dp)
-        ) {
-            Text(
-                text = "📲 Compartir mi reflexión",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = NavyPrincipal
-            )
         }
     }
 }

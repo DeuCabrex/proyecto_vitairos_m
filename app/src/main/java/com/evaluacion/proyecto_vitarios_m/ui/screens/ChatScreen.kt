@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.evaluacion.proyecto_vitarios_m.data.local.entity.ChatMessageEntity
 import com.evaluacion.proyecto_vitarios_m.ui.theme.*
+import com.evaluacion.proyecto_vitarios_m.ui.viewmodel.ChatViewModel
 
 data class MensajeChat(
     val texto: String,
@@ -21,13 +23,28 @@ data class MensajeChat(
 
 @Composable
 fun ChatScreen(
+    viewModel: ChatViewModel,
+    messagesList: List<ChatMessageEntity>,
     onNavigateBack: () -> Unit
 ) {
     var inputText by remember { mutableStateOf("") }
-    val mensajes = remember {
-        mutableStateListOf(
-            MensajeChat("Hola, soy VITAIROS-M. Estoy aquí para acompañarte y brindarte un espacio de pausa. ¿De qué te gustaría hablar o qué necesitas en este momento?", esUsuario = false)
+
+    // Mapeamos los mensajes persistentes de Room a la estructura MensajeChat de tu compañero.
+    // Si la base de datos está vacía, mostramos el mensaje de bienvenida por defecto.
+    val mensajes = if (messagesList.isEmpty()) {
+        listOf(
+            MensajeChat(
+                "Hola, soy VITAIROS-M. Estoy aquí para acompañarte y brindarte un espacio de pausa. ¿De qué te gustaría hablar o qué necesitas en este momento?",
+                esUsuario = false
+            )
         )
+    } else {
+        messagesList.map { entity ->
+            MensajeChat(
+                texto = entity.message,
+                esUsuario = entity.sender == "USER"
+            )
+        }
     }
 
     val opcionesRapidas = listOf(
@@ -38,14 +55,9 @@ fun ChatScreen(
 
     fun enviarMensaje(texto: String) {
         if (texto.isBlank()) return
-        mensajes.add(MensajeChat(texto, esUsuario = true))
 
-        val respuestaBot = when {
-            texto.contains("ansiedad", ignoreCase = true) -> "Lamento que sientas ansiedad. Probemos una respiración consciente: inhala en 4 segundos, sostén 4 y exhala suavemente en 4."
-            texto.contains("pausa", ignoreCase = true) -> "Tomarse una pausa es una excelente decisión. Desconéctate un par de minutos y estira tus hombros suavemente."
-            else -> "Entiendo lo que mencionas. Recuerda ir paso a paso. ¿Hay alguna pequeña acción que te ayude a sentirte mejor en este instante?"
-        }
-        mensajes.add(MensajeChat(respuestaBot, esUsuario = false))
+        // Guardamos a través del ViewModel (Room)
+        viewModel.sendMessage(texto)
         inputText = ""
     }
 
