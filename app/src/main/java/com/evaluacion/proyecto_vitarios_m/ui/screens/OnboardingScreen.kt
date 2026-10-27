@@ -93,7 +93,7 @@ fun OnboardingScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = "Ingresar como Usuario Demo",
+                    text = "Ingresar a la app",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = FondoPrincipal
