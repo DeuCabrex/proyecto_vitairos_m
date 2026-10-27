@@ -19,7 +19,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = FondoPrincipal
                 ) {
-                    // Cargamos el flujo completo con navegación
                     AppNavigation()
                 }
             }

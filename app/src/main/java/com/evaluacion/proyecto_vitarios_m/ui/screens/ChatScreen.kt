@@ -29,8 +29,6 @@ fun ChatScreen(
 ) {
     var inputText by remember { mutableStateOf("") }
 
-    // Mapeamos los mensajes persistentes de Room a la estructura MensajeChat de tu compañero.
-    // Si la base de datos está vacía, mostramos el mensaje de bienvenida por defecto.
     val mensajes = if (messagesList.isEmpty()) {
         listOf(
             MensajeChat(
@@ -56,7 +54,7 @@ fun ChatScreen(
     fun enviarMensaje(texto: String) {
         if (texto.isBlank()) return
 
-        // Guardamos a través del ViewModel (Room)
+        // Se guarda a traves del ViewModel
         viewModel.sendMessage(texto)
         inputText = ""
     }

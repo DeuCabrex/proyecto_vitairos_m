@@ -1,8 +1,16 @@
 package com.evaluacion.proyecto_vitarios_m.ui.screens
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +25,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,15 +47,16 @@ data class CategoryOption(
     val label: String
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckInScreen(
     viewModel: CheckInViewModel,
     onNavigateBack: () -> Unit,
     onNavigateToHistory: () -> Unit
 ) {
+    val context = LocalContext.current
+
     val moods = listOf(
-        MoodOption(1, "😢", "Muy mal", Color(0xFFEF5350)),
+        MoodOption(1, "😫", "Muy mal", Color(0xFFEF5350)),
         MoodOption(2, "🙁", "Mal", Color(0xFFFF9800)),
         MoodOption(3, "😐", "Regular", Color(0xFFFFCA28)),
         MoodOption(4, "🙂", "Bien", Color(0xFF66BB6A)),
@@ -64,6 +76,37 @@ fun CheckInScreen(
     var selectedCategory by remember { mutableStateOf<CategoryOption?>(null) }
     var noteText by remember { mutableStateOf("") }
 
+    // Estado y Launcher para integrar la Cámara del dispositivo
+    var fotoCapturada by remember { mutableStateOf<Bitmap?>(null) }
+    val launcherCamara = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            fotoCapturada = bitmap
+        }
+    }
+
+    fun compartirRegistro() {
+        val moodLabel = selectedMood?.label ?: "No especificado"
+        val emoji = selectedMood?.emoji ?: ""
+        val categoryLabel = selectedCategory?.label ?: "General"
+
+        val textoCompartir = """
+            🌱 Mi registro en VITAIROS-M:
+            • Estado de ánimo: $emoji $moodLabel
+            • Relacionado con: $categoryLabel
+            • Nota: ${if (noteText.isNotEmpty()) noteText else "Sin nota"}
+        """.trimIndent()
+
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, textoCompartir)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, "Compartir mi reflexión")
+        context.startActivity(shareIntent)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,7 +121,7 @@ fun CheckInScreen(
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             TextButton(onClick = onNavigateBack) {
-                Text(" Volver", color = AzulDigital, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text("← Volver", color = AzulDigital, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
@@ -102,7 +145,7 @@ fun CheckInScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = "¿Cómo te sientes en este momento?",
@@ -111,7 +154,7 @@ fun CheckInScreen(
                     color = NavyPrincipal
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,6 +162,12 @@ fun CheckInScreen(
                 ) {
                     moods.forEach { mood ->
                         val isSelected = selectedMood?.id == mood.id
+
+                        val animatedScale by animateFloatAsState(
+                            targetValue = if (isSelected) 1.35f else 1.0f,
+                            label = "emojiScale"
+                        )
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
@@ -129,7 +178,7 @@ fun CheckInScreen(
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
-                                    .size(52.dp)
+                                    .size(50.dp)
                                     .clip(CircleShape)
                                     .background(
                                         if (isSelected) mood.color.copy(alpha = 0.2f)
@@ -141,7 +190,11 @@ fun CheckInScreen(
                                         shape = CircleShape
                                     )
                             ) {
-                                Text(text = mood.emoji, fontSize = 26.sp)
+                                Text(
+                                    text = mood.emoji,
+                                    fontSize = 24.sp,
+                                    modifier = Modifier.scale(animatedScale)
+                                )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
@@ -160,22 +213,22 @@ fun CheckInScreen(
                     exit = fadeOut()
                 ) {
                     Column {
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         Text(
                             text = "¿Con qué se relaciona?",
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = NavyPrincipal
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(3),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.height(100.dp)
+                            modifier = Modifier.height(90.dp)
                         ) {
                             items(categories) { cat ->
                                 val isCatSelected = selectedCategory?.id == cat.id
@@ -185,7 +238,7 @@ fun CheckInScreen(
                                         .clip(RoundedCornerShape(8.dp))
                                         .background(if (isCatSelected) AzulDigital else FondoSecundario)
                                         .clickable { selectedCategory = cat }
-                                        .padding(vertical = 10.dp)
+                                        .padding(vertical = 8.dp)
                                 ) {
                                     Text(
                                         text = cat.label,
@@ -197,16 +250,16 @@ fun CheckInScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
                             text = "Nota o comentario (opcional)",
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = NavyPrincipal
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         OutlinedTextField(
                             value = noteText,
@@ -214,7 +267,7 @@ fun CheckInScreen(
                             placeholder = { Text("Escribe algo que quieras recordar...", fontSize = 12.sp, color = GrisAzulado) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp),
+                                .height(75.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = FondoSecundario,
@@ -223,39 +276,90 @@ fun CheckInScreen(
                                 unfocusedBorderColor = Color.Transparent
                             )
                         )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { launcherCamara.launch(null) },
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier.height(40.dp)
+                            ) {
+                                Text(
+                                    text = if (fotoCapturada == null) "📷 Tomar foto" else "📷 Cambiar foto",
+                                    fontSize = 12.sp,
+                                    color = NavyPrincipal,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            fotoCapturada?.let { bitmap ->
+                                Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = "Foto capturada",
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .border(1.dp, AzulDigital, RoundedCornerShape(8.dp))
+                                )
+                            }
+                        }
                     }
                 }
             }
 
-            Button(
-                onClick = {
-                    selectedMood?.let { mood ->
-                        viewModel.guardarCheckIn(
-                            moodId = mood.id,
-                            category = selectedCategory?.label ?: "",
-                            note = noteText,
-                            onFinished = {
-                                onNavigateToHistory()
-                            }
+            Column {
+                Button(
+                    onClick = {
+                        selectedMood?.let { mood ->
+                            viewModel.guardarCheckIn(
+                                moodId = mood.id,
+                                category = selectedCategory?.label ?: "",
+                                note = noteText,
+                                onFinished = {
+                                    onNavigateToHistory()
+                                }
+                            )
+                        }
+                    },
+                    enabled = selectedMood != null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(46.dp),
+                    shape = RoundedCornerShape(23.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AzulDigital,
+                        disabledContainerColor = GrisAzulado.copy(alpha = 0.3f)
+                    )
+                ) {
+                    Text(
+                        text = "Guardar Registro",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
+                if (selectedMood != null) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OutlinedButton(
+                        onClick = { compartirRegistro() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(42.dp),
+                        shape = RoundedCornerShape(21.dp)
+                    ) {
+                        Text(
+                            text = "📲 Compartir mi reflexión",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = NavyPrincipal
                         )
                     }
-                },
-                enabled = selectedMood != null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AzulDigital,
-                    disabledContainerColor = GrisAzulado.copy(alpha = 0.3f)
-                )
-            ) {
-                Text(
-                    text = "Guardar Registro",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                }
             }
         }
     }
